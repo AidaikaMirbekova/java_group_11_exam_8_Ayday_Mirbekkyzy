@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Country search</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+    integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous">
+  </script>
+  <script src="js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+
+  <form id="countries" style="margin: 1rem;">
+    <input id="form_control" type="text" name="country" placeholder="Enter country" value="" minlength="2" autofocus
+      required>
+    <button id="search_button" type="submit">Search</button>
+  </form>
+  <div id="main" class="country_block" style="margin-left: 1rem;">
+  </div>
+
+  <script>
+    const infoBlock = $("#main")
+    console.log(infoBlock)
+
+    $('#countries').on('submit', async e => {
+    
+      try {
+        e.preventDefault();
+        console.log(e.target)
+
+        let data = new FormData(e.target)
+        let country = await fetch('https://restcountries.com/v3.1/name/' + data.get('country'))
+
+        let countryJson = await country.json()
+        const input = document.getElementById('form_control');
+        input.focus()
+        input.value = ""
+        console.log(countryJson)
+
+        const currencyArray = Object.values(countryJson[0].currencies)
+        console.log(currencyArray[0].name)
+
+        $('<div class="country_name">').appendTo('.country_block').text(countryJson[0].altSpellings[1])
+        $('<div class="country_capital">').appendTo('.country_block').text(countryJson[0].capital)
+        $('<img class="country_flag">').appendTo('.country_block').attr('src', countryJson[0].flags.png)
+        $('<div class="country_region">').appendTo('.country_block').text(countryJson[0].region)
+        $('<div class="country_currencies">').appendTo('.country_block').text(currencyArray[0].name)
+        $('<a class="country_wikipedia_href" target="_blank">More</a>').appendTo('.country_block').attr('href',
+          "https://www.google.com/search?q=" + countryJson[0].altSpellings[1])
+        $('<hr><br>').appendTo('.country_block')
+      } catch {
+        alert('Not found country by this name!!!')
+      }
+    })
+  
+  </script>
+</body>
+
+</html>
